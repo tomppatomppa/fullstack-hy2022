@@ -21,22 +21,39 @@ const App = () => {
   const [votes, addVote] = useState(points)
 
   const handleVoteClick = () => {
+    console.log('clicked')
     const copy = { ...votes }
     copy[selected] += 1
     addVote(copy)
   }
 
+  const getNumber = () => {
+    let highest = 0
+    let index = 0
+    for (let i = 0; i < 7; i++) {
+      if (votes[i] > highest) {
+        highest = votes[i]
+        index = i
+      }
+    }
+    return index
+  }
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       {anecdotes[selected]}
       <p>Has {votes[selected]} votes</p>
       <p>
         <Button handleClick={() => handleVoteClick()} text='Vote' />
+
         <Button
           handleClick={() => setSelected(Math.floor(Math.random() * 7 + 0))}
           text='next anecdote'
         />
       </p>
+      <h1>Anecdote with most votes</h1>
+      <p>{anecdotes[getNumber()]}</p>
+      <p>has {votes[getNumber()]} votes</p>
     </div>
   )
 }
