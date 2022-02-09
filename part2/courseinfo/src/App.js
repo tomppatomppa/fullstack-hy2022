@@ -1,7 +1,6 @@
 import React from 'react'
 
 const Part = (props) => {
-  console.log(props)
   return (
     <p>
       {props.name} {props.exercises}
@@ -25,12 +24,14 @@ const Content = (props) => {
   )
 }
 const Total = (props) => {
-  const [one, two, three] = props.parts
-
   return (
     <div>
       <p>
-        Number of excercises {one.exercises + two.exercises + three.exercises}
+        Number of excercises{' '}
+        {props.parts.reduce(
+          (previous, current) => previous + current.exercises,
+          0
+        )}
       </p>
     </div>
   )
@@ -40,6 +41,7 @@ const Course = (props) => {
     <div>
       <Header name={props.course.name} />
       <Content parts={props.course.parts} />
+      <Total parts={props.course.parts} />
     </div>
   )
 }
@@ -62,6 +64,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3,
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4,
       },
     ],
   }
