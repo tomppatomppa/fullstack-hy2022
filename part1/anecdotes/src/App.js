@@ -26,7 +26,6 @@ const App = () => {
     copy[selected] += 1
     addVote(copy)
   }
-
   const getNumber = () => {
     let highest = 0
     let index = 0
@@ -45,7 +44,6 @@ const App = () => {
       <p>Has {votes[selected]} votes</p>
       <p>
         <Button handleClick={() => handleVoteClick()} text='Vote' />
-
         <Button
           handleClick={() => setSelected(Math.floor(Math.random() * 7 + 0))}
           text='next anecdote'
