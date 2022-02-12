@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import axios from 'axios'
+import React, { useState, useEffect } from 'react'
 
 const Person = (props) => {
   if (props.name.toLowerCase().indexOf(props.filter.toLowerCase()) > -1) {
@@ -54,13 +55,19 @@ const PersonForm = ({ addPerson, value, onChange, number, numberHandler }) => {
   )
 }
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-1234567', id: 1 },
-    { name: 'Tika west', number: '040-1123127', id: 2 },
-  ])
+  const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+
+  useEffect(() => {
+    console.log('effect')
+    axios.get('http://localhost:3001/persons').then((response) => {
+      setPersons(response.data)
+      console.log('promise fulfilled')
+    })
+  }, [])
+  console.log(persons)
 
   const addPerson = (event) => {
     event.preventDefault()
