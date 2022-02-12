@@ -2,10 +2,28 @@ import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 
 const Country = (props) => {
-  if (props.name.toLowerCase().indexOf(props.filter.toLowerCase()) > -1) {
-    return <div>{props.name}</div>
-  }
-  return <div></div>
+  return <div>{props.name}</div>
+}
+const Languages = (props) => {
+  return <li>{props.language}</li>
+}
+const SingleCountry = ({ country }) => {
+  return (
+    <div>
+      <h1>{country.name.common}</h1>
+      <p>{country.capital}</p>
+      <p>Area: {country.area}</p>
+      <h3>Languages:</h3>
+      <ul>
+        {Object.values(country.languages).map((language) => (
+          <Languages key={language} language={language} />
+        ))}
+      </ul>
+      <div>
+        <img alt='' src={Object.values(country.flags).at(0)}></img>
+      </div>
+    </div>
+  )
 }
 
 const Filter = ({ value, onChange }) => {
@@ -15,33 +33,28 @@ const Filter = ({ value, onChange }) => {
     </div>
   )
 }
-const Countries = ({ countries, filter }) => {
-  function count() {
-    let numberOfCountries = 0
-    for (let i = 0; i < countries.length; i++) {
-      {
-        if (
-          countries[i].name.common.toLowerCase().indexOf(filter.toLowerCase()) >
-          -1
-        ) {
-          numberOfCountries++
-        }
-      }
-    }
-    return numberOfCountries
+const Countries = ({ countries, wordFilter }) => {
+  const result = Object.values(countries).filter((value) => {
+    return value.name.common.toLowerCase().includes(wordFilter.toLowerCase())
+  })
+
+  if (result.length > 10) {
+    return <div>Too many matches, specify another filter</div>
   }
 
-  if (count() > 10) {
-    return <div>Too many matches, specify another filter</div>
+  if (result.length === 1) {
+    return (
+      <div>
+        {result.map((country) => (
+          <SingleCountry key={country.name.common} country={country} />
+        ))}
+      </div>
+    )
   }
   return (
     <div>
-      {countries.map((country) => (
-        <Country
-          key={country.name.common}
-          name={country.name.common}
-          filter={filter}
-        />
+      {result.map((country) => (
+        <Country key={country.name.common} name={country.name.common} />
       ))}
     </div>
   )
@@ -63,7 +76,7 @@ const App = () => {
   return (
     <div>
       <Filter value={newFilter} onChange={handleFilterChange} />
-      <Countries countries={countries} filter={newFilter} />
+      <Countries countries={countries} wordFilter={newFilter} />
     </div>
   )
 }
