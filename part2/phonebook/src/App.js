@@ -1,6 +1,6 @@
 import axios from 'axios'
 import React, { useState, useEffect } from 'react'
-
+import personServices from './services/persons'
 const Person = (props) => {
   if (props.name.toLowerCase().indexOf(props.filter.toLowerCase()) > -1) {
     //console.log(props.filter, 'found in', props.name)
@@ -61,13 +61,16 @@ const App = () => {
   const [newFilter, setNewFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-    axios.get('http://localhost:3001/persons').then((response) => {
-      setPersons(response.data)
-      console.log('promise fulfilled')
-    })
+    personServices
+      .getAll()
+      .then((initialPersons) => {
+        setPersons(initialPersons)
+        console.log('initial Persons')
+      })
+      .catch((error) => {
+        console.log('error loading initial data')
+      })
   }, [])
-  console.log(persons)
 
   const addPerson = (event) => {
     event.preventDefault()
@@ -76,7 +79,14 @@ const App = () => {
         name: newName,
         number: newNumber,
       }
-      setPersons(persons.concat(personObject))
+      personServices
+        .create(personObject)
+        .then((returnedPerson) => {
+          setPersons(persons.concat(returnedPerson))
+        })
+        .catch((error) => {
+          console.log('coult not add person')
+        })
       setNewName('')
       setNewNumber('')
     }
