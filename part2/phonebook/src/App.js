@@ -1,4 +1,3 @@
-import axios from 'axios'
 import React, { useState, useEffect } from 'react'
 import personServices from './services/persons'
 const Person = (props) => {
@@ -13,21 +12,7 @@ const Person = (props) => {
   }
   return <div></div>
 }
-const Persons = (props) => {
-  return (
-    <div>
-      {props.persons.map((person) => (
-        <Person
-          key={person.name}
-          name={person.name}
-          number={person.number}
-          filter={props.filter}
-          deletePersonData={props.deletePersonData}
-        />
-      ))}
-    </div>
-  )
-}
+
 const Filter = ({ value, onChange }) => {
   return (
     <div>
@@ -75,6 +60,7 @@ const App = () => {
   }, [])
 
   const addPerson = (event) => {
+    //const person = persons.find((n) => n.name === newName)
     event.preventDefault()
     if (!checkDuplicates()) {
       const personObject = {
@@ -91,6 +77,8 @@ const App = () => {
         })
       setNewName('')
       setNewNumber('')
+    } else {
+      updateNumber()
     }
   }
   const deletePersonsData = (id, name) => {
@@ -106,7 +94,25 @@ const App = () => {
         console.log('person already removed')
       })
   }
-
+  const updateNumber = () => {
+    const personData = persons.filter((n) => n.name === newName)
+    //console.log(personData)
+    const updatePersonNumber = { ...personData[0], number: newNumber }
+    const id = updatePersonNumber.id
+    // console.log(id)
+    personServices
+      .update(id, updatePersonNumber)
+      .then((returnedPerson) => {
+        setPersons(
+          persons.map((person) => (person.id !== id ? person : returnedPerson))
+        )
+        setNewName('')
+        setNewNumber('')
+      })
+      .catch((error) => {
+        console.log('error updating data')
+      })
+  }
   function checkDuplicates() {
     for (let i = 0; i < persons.length; i++) {
       if (persons.at(i).name === newName) {
@@ -117,7 +123,6 @@ const App = () => {
     return false
   }
   const handleNameChange = (event) => {
-    //console.log(event.target.value)
     setNewName(event.target.value)
   }
   const handleFilterChange = (event) => {
