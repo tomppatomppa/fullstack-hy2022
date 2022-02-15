@@ -6,7 +6,8 @@ const Person = (props) => {
     //console.log(props.filter, 'found in', props.name)
     return (
       <div>
-        {props.name} {props.number}
+        {props.name} {props.number}{' '}
+        <button onClick={props.onClick}>delete</button>
       </div>
     )
   }
@@ -21,6 +22,7 @@ const Persons = (props) => {
           name={person.name}
           number={person.number}
           filter={props.filter}
+          deletePersonData={props.deletePersonData}
         />
       ))}
     </div>
@@ -91,6 +93,19 @@ const App = () => {
       setNewNumber('')
     }
   }
+  const deletePersonsData = (id, name) => {
+    window.confirm(`delete ${name}`)
+    personServices
+      .deletePerson(id)
+      .then(
+        personServices.getAll().then((initialPersons) => {
+          setPersons(initialPersons)
+        })
+      )
+      .catch((error) => {
+        console.log('person already removed')
+      })
+  }
 
   function checkDuplicates() {
     for (let i = 0; i < persons.length; i++) {
@@ -125,8 +140,15 @@ const App = () => {
         numberHandler={handleNumberChange}
       />
       <h2>Numbers</h2>
-
-      <Persons persons={persons} filter={newFilter} />
+      {persons.map((person) => (
+        <Person
+          key={person.name}
+          name={person.name}
+          number={person.number}
+          filter={newFilter}
+          onClick={() => deletePersonsData(person.id, person.name)}
+        />
+      ))}
     </div>
   )
 }
