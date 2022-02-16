@@ -1,51 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import personServices from './services/persons'
-const Person = (props) => {
-  if (props.name.toLowerCase().indexOf(props.filter.toLowerCase()) > -1) {
-    //console.log(props.filter, 'found in', props.name)
-    return (
-      <div>
-        {props.name} {props.number}{' '}
-        <button onClick={props.onClick}>delete</button>
-      </div>
-    )
-  }
-  return <div></div>
-}
+import Notification from './components/notification'
+import Filter from './components/filter'
+import PersonForm from './components/personForm'
+import Person from './components/person'
+import './index.css'
 
-const Filter = ({ value, onChange }) => {
-  return (
-    <div>
-      filter shown with <input value={value} onChange={onChange} />
-    </div>
-  )
-}
-const Number = ({ value, onChange }) => {
-  return (
-    <div>
-      number: <input value={value} onChange={onChange}></input>
-    </div>
-  )
-}
-const PersonForm = ({ addPerson, value, onChange, number, numberHandler }) => {
-  //console.log('onsubmit', onSubmit)
-  return (
-    <form onSubmit={addPerson}>
-      <div>
-        name: <input value={value} onChange={onChange} />
-      </div>
-      <Number value={number} onChange={numberHandler} />
-      <div>
-        <button type='submit'>add</button>
-      </div>
-    </form>
-  )
-}
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newFilter, setNewFilter] = useState('')
+  const [errorMessage, setErrorMessage] = useState({
+    message: '',
+    isError: false,
+  })
 
   useEffect(() => {
     personServices
@@ -55,14 +24,20 @@ const App = () => {
         console.log('initial Persons')
       })
       .catch((error) => {
-        console.log('error loading initial data')
+        setErrorMessage({
+          ...errorMessage,
+          message: `'error loading initial data'`,
+          isError: true,
+        })
       })
   }, [])
 
   const addPerson = (event) => {
-    //const person = persons.find((n) => n.name === newName)
     event.preventDefault()
-    if (!checkDuplicates()) {
+    if (persons.find((n) => n.name === newName)) {
+      window.alert(`${newName} is already in added to phonebook`)
+      updateNumber()
+    } else {
       const personObject = {
         name: newName,
         number: newNumber,
@@ -71,14 +46,23 @@ const App = () => {
         .create(personObject)
         .then((returnedPerson) => {
           setPersons(persons.concat(returnedPerson))
+          setErrorMessage({
+            ...errorMessage,
+            message: `Added ${newName}`,
+            isError: false,
+          })
+          console.log(errorMessage)
         })
         .catch((error) => {
-          console.log('coult not add person')
+          setErrorMessage({
+            ...errorMessage,
+            message: `Error adding ${newName}`,
+            isError: true,
+          })
         })
+      resetError()
       setNewName('')
       setNewNumber('')
-    } else {
-      updateNumber()
     }
   }
   const deletePersonsData = (id, name) => {
@@ -91,36 +75,40 @@ const App = () => {
         })
       )
       .catch((error) => {
-        console.log('person already removed')
+        setErrorMessage({
+          ...errorMessage,
+          message: `Information of ${name} has already been removed from server`,
+          isError: true,
+        })
       })
+    resetError()
   }
   const updateNumber = () => {
     const personData = persons.filter((n) => n.name === newName)
-    //console.log(personData)
-    const updatePersonNumber = { ...personData[0], number: newNumber }
-    const id = updatePersonNumber.id
-    // console.log(id)
+    const data = { ...personData[0], number: newNumber }
     personServices
-      .update(id, updatePersonNumber)
+      .update(data.id, data)
       .then((returnedPerson) => {
         setPersons(
-          persons.map((person) => (person.id !== id ? person : returnedPerson))
+          persons.map((person) =>
+            person.id !== data.id ? person : returnedPerson
+          )
         )
         setNewName('')
         setNewNumber('')
       })
       .catch((error) => {
-        console.log('error updating data')
+        setErrorMessage({
+          ...errorMessage,
+          message: `Information of ${data.name} has already been removed from server`,
+          isError: true,
+        })
       })
   }
-  function checkDuplicates() {
-    for (let i = 0; i < persons.length; i++) {
-      if (persons.at(i).name === newName) {
-        window.alert(`${newName} is already in added to phonebook`)
-        return true
-      }
-    }
-    return false
+  function resetError() {
+    setTimeout(() => {
+      setErrorMessage({ ...errorMessage, message: '', isError: false })
+    }, 5000)
   }
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -135,6 +123,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={errorMessage} />
       <Filter value={newFilter} onChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm
