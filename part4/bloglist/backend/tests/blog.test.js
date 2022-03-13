@@ -11,7 +11,7 @@ const blogs = [
     title: 'Blog 2',
     author: 'blog Author2',
     url: 'blog url',
-    likes: 7,
+    likes: 10,
   },
   {
     title: 'Blog 3',
@@ -20,10 +20,16 @@ const blogs = [
     likes: 1,
   },
   {
-    title: 'Blog 2',
+    title: 'Blog 4',
     author: 'blog Author1',
     url: 'blog url',
     likes: 4,
+  },
+  {
+    title: 'Blog 2',
+    author: 'blog Author2',
+    url: 'blog url',
+    likes: 10,
   },
 ]
 test('dummy return one', () => {
@@ -60,6 +66,17 @@ describe('most blogs', () => {
     const testArray = {
       author: 'blog Author1',
       blogs: 2,
+    }
+    expect(result).toEqual(testArray)
+  })
+})
+
+describe('most likes', () => {
+  test('return author with most likes', () => {
+    const result = listHelper.mostLikes(blogs)
+    const testArray = {
+      author: 'blog Author2',
+      likes: 20,
     }
     expect(result).toEqual(testArray)
   })
