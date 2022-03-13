@@ -1,5 +1,31 @@
 const listHelper = require('../utils/list_helper')
 
+const blogs = [
+  {
+    title: 'Blog 1',
+    author: 'blog Author1',
+    url: 'blog url',
+    likes: 5,
+  },
+  {
+    title: 'Blog 2',
+    author: 'blog Author2',
+    url: 'blog url',
+    likes: 7,
+  },
+  {
+    title: 'Blog 3',
+    author: 'blog Author3',
+    url: 'blog url',
+    likes: 1,
+  },
+  {
+    title: 'Blog 2',
+    author: 'blog Author1',
+    url: 'blog url',
+    likes: 4,
+  },
+]
 test('dummy return one', () => {
   const blogs = []
 
@@ -8,44 +34,33 @@ test('dummy return one', () => {
 })
 
 describe('dummy get total likes', () => {
-  const blogs = [
-    {
-      title: 'Blog Title',
-      author: 'blog Author',
-      url: 'blog url',
-      likes: 5,
-    },
-  ]
   test('when list has only one blog, equals the likes of that', () => {
-    const result = listHelper.totalLikes(blogs)
+    const result = listHelper.totalLikes(blogs[0])
     expect(result).toBe(5)
   })
 })
 
 describe('favorite blog', () => {
-  const blogs = [
-    {
-      title: 'Blog 1',
-      author: 'blog Author',
-      url: 'blog url',
-      likes: 5,
-    },
-    {
-      title: 'Blog 2',
-      author: 'blog Author',
-      url: 'blog url',
-      likes: 7,
-    },
-    {
-      title: 'Blog 3',
-      author: 'blog Author',
-      url: 'blog url',
-      likes: 1,
-    },
-  ]
   test('return favorite', () => {
     const result = listHelper.favoriteBlog(blogs)
-    console.log(result)
-    expect(result).toEqual(blogs[1])
+
+    const testArray = {
+      title: 'Blog 2',
+      author: 'blog Author',
+      likes: 7,
+    }
+
+    expect(result).toEqual(testArray)
+  })
+})
+
+describe('most blogs', () => {
+  test('return author with most blogs', () => {
+    const result = listHelper.mostBlogs(blogs)
+    const testArray = {
+      author: 'blog Author1',
+      blogs: 2,
+    }
+    expect(result).toEqual(testArray)
   })
 })
