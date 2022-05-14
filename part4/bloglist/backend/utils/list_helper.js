@@ -1,4 +1,3 @@
-const { keys } = require('lodash')
 const _ = require('lodash')
 
 const dummy = (blogs) => {
@@ -7,6 +6,7 @@ const dummy = (blogs) => {
 
 const totalLikes = (blogs) => {
   const initial = 0
+
   return blogs.reduce((previous, { likes }) => previous + likes, initial)
 }
 
