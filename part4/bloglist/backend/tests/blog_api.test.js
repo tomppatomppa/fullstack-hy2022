@@ -97,6 +97,18 @@ test('if title and url does not exist', async () => {
 
 
 })
+describe('Deletion of a blog post', () => {
+    test('succeeds with status code 204 if id is valid', async () => {
+        const response = await api.get('/api/blogs')
+        const deleteThis = response.body.map(blog => blog.id)
+        console.log(deleteThis[0])
+        await api.delete(`/api/blogs/${deleteThis[0]}`).expect(204)  //remove first blog
+
+        const blogsInDb = await api.get('/api/blogs')
+        expect(blogsInDb.body).toHaveLength(initialBlogs.length - 1)
+
+    })
+})
 
 afterAll(() => {
     mongoose.connection.close()
