@@ -1,7 +1,9 @@
 const res = require('express/lib/response')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const { response } = require('../app')
 const app = require('../app')
+const blog = require('../models/blog')
 const Blog = require('../models/blog')
 
 const api = supertest(app)
@@ -38,46 +40,59 @@ beforeEach(async () => {
 }, 10000)
 
 
-describe('when database is not empty', () => {
-    test('return correct number of blogs and content-type', async () => {
-        const response = await api.get('/api/blogs').expect('Content-Type', /application\/json/)
 
-        expect(response.body).toHaveLength(initialBlogs.length)
-    })
-    //4.9* how to do this?
-    test('check id exists', async () => {
-        const result = await api.get('/api/blogs')
-        // console.log(result)
-        expect(result.body.id).toBeDefined()
-    })
+test('return correct number of blogs and content-type', async () => {
+    const response = await api.get('/api/blogs').expect(200).expect('Content-Type', /application\/json/)
+    expect(response.body).toHaveLength(initialBlogs.length)
 })
 
 
+//4.9* 
+test('check id exists', async () => {
+    const response = await api.get('/api/blogs')
+    response.body.map(blog => expect(blog.id).toBeDefined())
+})
 //4.10: test 3
-test('check if post adds new entry to database', async () => {
+// test('check if post adds new entry to database', async () => {
+//     const newBlog = {
+//         title: 'new blog1',
+//         author: 'new blog Author1',
+//         url: 'new blog url',
+//         likes: 11,
+//     }
+//     await api.post('/api/blogs').send(newBlog)
+//     const response = await api.get('/api/blogs')
+//     //remove id property
+//     const contents = response.body.map(({ author, likes, title, url }) => ({ author, likes, title, url }))
+//     expect(response.body).toHaveLength(initialBlogs.length + 1)
+//     expect(contents[3]).toEqual(newBlog)
 
+
+// })
+//4.11*: Blog list tests, step4
+test('check if likes property is missing', async () => {
     const newBlog = {
         title: 'new blog1',
         author: 'new blog Author1',
         url: 'new blog url',
-        likes: 11,
+
     }
-    let blogObject = new Blog(newBlog)
-    await blogObject.save()
-    const result = await api.get('/api/blogs')
-    expect(result.body).toHaveLength(initialBlogs.length + 1)
+    await api.post('/api/blogs').send(newBlog)
+
+    const response = await api.get('/api/blogs')
+    const contents = response.body.map(blog => blog.likes)
+    expect(contents).toBeDefined()
 
 })
-test('check if likes property is missing', async () => {
+test('if title and url does not exist', async () => {
+    const newBlog = {
+        author: 'new blog Author1',
+        likes: 11,
+    }
+    await api.post('/api/blogs').send(newBlog).expect(400)
 
-    let blogs = await Blog.find({})
-    blogs = blogs.map(blog => blog.toJSON())
-    const copy = blogs.map(blog => {
-        if (!blog.likes)
-            return { ...blog, likes: 0 }
-        return blog
-    });
-    console.log(copy)
+    const response = await api.get('/api/blogs')
+    expect(response.body).toHaveLength(initialBlogs.length)
 
 
 })
