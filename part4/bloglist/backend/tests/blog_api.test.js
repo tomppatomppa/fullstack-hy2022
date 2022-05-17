@@ -40,7 +40,7 @@ beforeEach(async () => {
 }, 10000)
 
 
-
+//4.8
 test('return correct number of blogs and content-type', async () => {
     const response = await api.get('/api/blogs').expect(200).expect('Content-Type', /application\/json/)
     expect(response.body).toHaveLength(initialBlogs.length)
@@ -53,22 +53,22 @@ test('check id exists', async () => {
     response.body.map(blog => expect(blog.id).toBeDefined())
 })
 //4.10: test 3
-// test('check if post adds new entry to database', async () => {
-//     const newBlog = {
-//         title: 'new blog1',
-//         author: 'new blog Author1',
-//         url: 'new blog url',
-//         likes: 11,
-//     }
-//     await api.post('/api/blogs').send(newBlog)
-//     const response = await api.get('/api/blogs')
-//     //remove id property
-//     const contents = response.body.map(({ author, likes, title, url }) => ({ author, likes, title, url }))
-//     expect(response.body).toHaveLength(initialBlogs.length + 1)
-//     expect(contents[3]).toEqual(newBlog)
+test('check if post adds new entry to database', async () => {
+    const newBlog = {
+        title: 'new blog1',
+        author: 'new blog Author1',
+        url: 'new blog url',
+        likes: 11,
+    }
+    await api.post('/api/blogs').send(newBlog)
+    const response = await api.get('/api/blogs')
+    //remove id property
+    const contents = response.body.map(({ author, likes, title, url }) => ({ author, likes, title, url }))
+    expect(response.body).toHaveLength(initialBlogs.length + 1)
+    expect(contents[3]).toEqual(newBlog)
 
 
-// })
+})
 //4.11*: Blog list tests, step4
 test('check if likes property is missing', async () => {
     const newBlog = {
@@ -84,6 +84,7 @@ test('check if likes property is missing', async () => {
     expect(contents).toBeDefined()
 
 })
+//4.12: Blog list tests, step5
 test('if title and url does not exist', async () => {
     const newBlog = {
         author: 'new blog Author1',
