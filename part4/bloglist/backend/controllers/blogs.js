@@ -1,6 +1,6 @@
 const blogsRouter = require('express').Router()
-const req = require('express/lib/request')
-const blog = require('../models/blog')
+
+
 const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
@@ -40,11 +40,22 @@ blogsRouter.delete('/:id', async (request, response) => {
       error: 'Cannot find or delete note'
     })
   }
+})
 
+blogsRouter.put('/:id', async (request, response) => {
+  const body = request.body
 
+  const newBlog = {
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes ? body.likes : 0
+  }
+
+  const blog = await Blog.findByIdAndUpdate(request.params.id, newBlog)
+  response.json(blog)
 
 
 
 })
-
 module.exports = blogsRouter

@@ -109,6 +109,22 @@ describe('Deletion of a blog post', () => {
 
     })
 })
+describe('Update existing blog', () => {
+    test('update existing blog likes', async () => {
+        const response = await api.get('/api/blogs')
+        const updateThisBlog = response.body.map(blog => blog.id)
+
+        const newBlog = {
+            title: 'Blog 2',
+            author: 'blog Author2',
+            url: 'blog url',
+            likes: 7,
+        }
+        await api.put(`/api/blogs/${updateThisBlog[0]}`).send(newBlog).expect(200)
+
+
+    })
+})
 
 afterAll(() => {
     mongoose.connection.close()
