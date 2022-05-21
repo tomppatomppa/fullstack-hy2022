@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 
 const blogsRouter = require('./controllers/blogs')
+const userRouter = require('./controllers/users')
 const mongoose = require('mongoose')
 
 mongoose
@@ -18,5 +19,6 @@ app.use(express.static('build'))
 app.use(express.json())
 
 app.use('/api/blogs', blogsRouter)
+app.use('/api/users', userRouter)
 
 module.exports = app
