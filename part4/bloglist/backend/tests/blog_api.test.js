@@ -1,9 +1,7 @@
-const res = require('express/lib/response')
+
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const { response } = require('../app')
 const app = require('../app')
-const blog = require('../models/blog')
 const Blog = require('../models/blog')
 
 const api = supertest(app)
