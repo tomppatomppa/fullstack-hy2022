@@ -10,23 +10,18 @@ userRouter.get('/', async (request, response) => {
     response.json(users.map(user => user.toJSON()))
 })
 
-userRouter.post('/', async (request, response) => {
+userRouter.post('/', async (request, response, next) => {
     const { username, name, password } = request.body
 
-    if (username.length < 3) {
-        return response.status(400).json({
-            error: 'username must be at least 3 characters long'
-        })
-    }
-    if (password.length < 3) {
-        return response.status(400).json({
-            error: 'password must be at least 3 characters long'
-        })
-    }
     const existingUser = await User.findOne({ username })
     if (existingUser) {
         return response.status(400).json({
             error: 'username must be unique'
+        })
+    }
+    if (!password || password.length < 3) {
+        return response.status(400).json({
+            error: "password is required and it has to be at least 3 characters long"
         })
     }
 
@@ -38,10 +33,11 @@ userRouter.post('/', async (request, response) => {
         name,
         passwordHash,
     })
-
-    const savedUser = await user.save()
-
-    response.status(201).json(savedUser)
-
+    try {
+        const savedUser = await user.save()
+        response.status(201).json(savedUser)
+    } catch (exception) {
+        next(exception)
+    }
 })
 module.exports = userRouter

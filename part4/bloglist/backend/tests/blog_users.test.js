@@ -27,7 +27,7 @@ describe('when db is not empty', () => {
         await api.get('/api/users').expect(200).expect('Content-type', /application\/json/)
     })
 })
-describe('Adding new user', () => {
+describe('Adding invalid new user', () => {
 
     test('add user with invalid username', async () => {
         const invalidUsername = [{
@@ -35,9 +35,20 @@ describe('Adding new user', () => {
             name: "Kalle",
             password: "133"
         }]
+
         await api.post('/api/users').send(invalidUsername[0]).expect(400)
         const response = await api.get('/api/users')
+        expect(response.body).toHaveLength(initialUsers.length)
+    })
+    test('add user with invalid password', async () => {
+        const invalidPassword = [{
+            username: "kalle123",
+            name: "Kalle",
+            password: "13"
+        }]
 
+        await api.post('/api/users').send(invalidPassword[0]).expect(400)
+        const response = await api.get('/api/users')
         expect(response.body).toHaveLength(initialUsers.length)
     })
 
