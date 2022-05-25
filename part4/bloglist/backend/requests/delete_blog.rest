@@ -2,5 +2,5 @@
 
 DELETE http://localhost:3003/api/blogs/628b96ab13f89cf6ce5c8bf6 HTTP/1.1
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ldyB1c2VyIiwiaWQiOiI2MjhkMDY2YTM4NWI1MjRjZDA4NjAxYzQiLCJpYXQiOjE2NTM0NTk1MzksImV4cCI6MTY1MzQ2MzEzOX0.P6hk3EmZAKj73zexmCGp4PgelgaHL0EzcHEwMx5oU38
+Authorization: bearer EnterToken
 

@@ -1,8 +1,5 @@
-const { contentType } = require('express/lib/response')
-const { forEach, before } = require('lodash')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-const { use } = require('../app')
 const app = require('../app')
 const User = require('../models/users')
 
@@ -14,7 +11,6 @@ const initialUsers = [
         name: "Kalle",
         password: "123"
     }
-
 ]
 
 beforeEach(async () => {
@@ -52,8 +48,6 @@ describe('Adding invalid new user', () => {
         const response = await api.get('/api/users')
         expect(response.body).toHaveLength(initialUsers.length)
     })
-
-
 })
 
 afterAll(() => {

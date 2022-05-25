@@ -1,4 +1,3 @@
-
 const jwt = require('jsonwebtoken')
 const logger = require('./logger')
 const User = require('../models/users')
@@ -32,6 +31,7 @@ const userExtractor = async (request, response, next) => {
 
     next()
 }
+
 const errorHandler = (error, request, response, next) => {
 
     if (error.name === 'CastError') {

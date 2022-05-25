@@ -61,8 +61,6 @@ describe('Adding blogs to database', () => {
 
         const response = await api.get('/api/blogs')
         expect(response.body).toHaveLength(initialBlogs.length)
-
-
     })
 
     test('check if post adds new entry to database', async () => {
@@ -120,12 +118,11 @@ describe('I blogs database is not empty', () => {
         const response = await api.get('/api/blogs')
         response.body.map(blog => expect(blog.id).toBeDefined())
     })
-    //4.10: test 3
-
 
 })
 
 describe('Deletion of a blog post', () => {
+
     test('succeeds with status code 204 if id is valid', async () => {
         const newUser = {
             username: "LoginDeleteBlogUser",

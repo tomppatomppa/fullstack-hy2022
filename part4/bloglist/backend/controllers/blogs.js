@@ -1,10 +1,9 @@
 const blogsRouter = require('express').Router()
 
-const Blog = require('../models/blog')
-
 const jwt = require('jsonwebtoken')
 const middleware = require('../utils/middleware')
 
+const Blog = require('../models/blog')
 
 
 
@@ -67,7 +66,6 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
       error: 'Cannot find or delete note'
     })
   }
-
 })
 
 blogsRouter.put('/:id', async (request, response) => {

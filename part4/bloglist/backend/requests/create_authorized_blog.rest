@@ -1,6 +1,6 @@
 POST http://localhost:3003/api/blogs/ HTTP/1.1
 Content-type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5ldyB1c2VyIiwiaWQiOiI2MjhkMDY2YTM4NWI1MjRjZDA4NjAxYzQiLCJpYXQiOjE2NTM0NjQ1MzIsImV4cCI6MTY1MzQ2ODEzMn0.zPylepfUqaRI9y4XoofJ5VPIvRXzRqm5an7iJeAOVmc
+Authorization: bearer EnterToken
 
 {
     "title": "new blog 111111",
