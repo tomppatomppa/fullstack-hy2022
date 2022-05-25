@@ -14,6 +14,7 @@ const initialUsers = [
         name: "Kalle",
         password: "123"
     }
+
 ]
 
 beforeEach(async () => {

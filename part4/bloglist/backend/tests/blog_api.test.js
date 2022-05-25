@@ -1,9 +1,8 @@
-
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
-
+const User = require('../models/users')
 const api = supertest(app)
 
 const initialBlogs = [
@@ -28,6 +27,7 @@ const initialBlogs = [
 ]
 
 beforeEach(async () => {
+    await User.deleteMany({})
     await Blog.deleteMany({})
     let blogObject = new Blog(initialBlogs[0])
     await blogObject.save()
@@ -37,32 +37,7 @@ beforeEach(async () => {
     await blogObject.save()
 }, 10000)
 
-describe('I blogs database is not empty', () => {
-    //4.8
-    test('return correct number of blogs and content-type', async () => {
-        const response = await api.get('/api/blogs').expect(200).expect('Content-Type', /application\/json/)
-        expect(response.body).toHaveLength(initialBlogs.length)
-    })
-    //4.9* 
-    test('check id exists', async () => {
-        const response = await api.get('/api/blogs')
-        response.body.map(blog => expect(blog.id).toBeDefined())
-    })
-    //4.10: test 3
-    test('check if post adds new entry to database', async () => {
-        const newBlog = {
-            title: 'new blog1',
-            author: 'new blog Author1',
-            url: 'new blog url',
-            likes: 11,
-        }
-        await api.post('/api/blogs').send(newBlog)
-        const response = await api.get('/api/blogs')
-        //remove id property
-        const contents = response.body.map(({ author, likes, title, url }) => ({ author, likes, title, url }))
-        expect(response.body).toHaveLength(initialBlogs.length + 1)
-        expect(contents[3]).toEqual(newBlog)
-    })
+describe('Adding blogs to database', () => {
     //4.11*: Blog list tests, step4
     test('check if likes property is missing', async () => {
         const newBlog = {
@@ -89,17 +64,97 @@ describe('I blogs database is not empty', () => {
 
 
     })
+
+    test('check if post adds new entry to database', async () => {
+
+        const newUser = {
+            username: "LoginTestUser1",
+            name: "New Test User 1",
+            password: "1234"
+        }
+        await api.post('/api/users').send(newUser)
+            .expect(201)
+
+        const loginNewUser = {
+            username: "LoginTestUser1",
+            password: "1234"
+        }
+        const user = await api.post('/api/login').send(loginNewUser)
+            .expect(200)
+        const token = user.body.token
+
+        const newBlog = {
+            title: 'new blog1',
+            author: 'new blog Author1',
+            url: 'new blog url',
+            likes: 11,
+        }
+        await api.post('/api/blogs').send(newBlog).set({ Authorization: `Bearer ${token}` })
+        const response = await api.get('/api/blogs')
+        //remove id property
+        const contents = response.body.map(({ author, likes, title, url }) => ({ author, likes, title, url }))
+        expect(response.body).toHaveLength(initialBlogs.length + 1)
+        expect(contents[3]).toEqual(newBlog)
+
+    })
+
+    test('Add new blog with invalid token', async () => {
+        const newBlog = {
+            title: 'new blog1',
+            author: 'new blog Author1',
+            url: 'new blog url',
+            likes: 11,
+        }
+        await api.post('/api/blogs').send(newBlog).expect(401)
+    })
+})
+
+describe('I blogs database is not empty', () => {
+    //4.8
+    test('return correct number of blogs and content-type', async () => {
+        const response = await api.get('/api/blogs').expect(200).expect('Content-Type', /application\/json/)
+        expect(response.body).toHaveLength(initialBlogs.length)
+    })
+    //4.9* 
+    test('check id exists', async () => {
+        const response = await api.get('/api/blogs')
+        response.body.map(blog => expect(blog.id).toBeDefined())
+    })
+    //4.10: test 3
+
+
 })
 
 describe('Deletion of a blog post', () => {
     test('succeeds with status code 204 if id is valid', async () => {
-        const response = await api.get('/api/blogs')
-        const deleteThis = response.body.map(blog => blog.id)
+        const newUser = {
+            username: "LoginDeleteBlogUser",
+            name: "New Test User 1",
+            password: "1234"
+        }
+        await api.post('/api/users').send(newUser)
+            .expect(201)
 
-        await api.delete(`/api/blogs/${deleteThis[0]}`).expect(204)  //remove first blog
+        const loginNewUser = {
+            username: "LoginDeleteBlogUser",
+            password: "1234"
+        }
+        const user = await api.post('/api/login').send(loginNewUser)
+            .expect(200)
+        const token = user.body.token
+
+        const newBlog = {
+            title: 'Delete This blog post',
+            author: 'new blog Author1',
+            url: 'new blog url',
+            likes: 11,
+        }
+        const blog = await api.post('/api/blogs').send(newBlog).set({ Authorization: `Bearer ${token}` })
+
+        await api.delete(`/api/blogs/${blog.body.id}`).set({ Authorization: `Bearer ${token}` }).expect(204)
 
         const blogsInDb = await api.get('/api/blogs')
-        expect(blogsInDb.body).toHaveLength(initialBlogs.length - 1)
+        expect(blogsInDb.body).toHaveLength(initialBlogs.length)
 
     })
 })
